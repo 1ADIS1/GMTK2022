@@ -59,6 +59,7 @@ public:
 	void InitSides();
 
 
+	
 	void AdjustForDiceEditor();
 	
 	// Called every frame

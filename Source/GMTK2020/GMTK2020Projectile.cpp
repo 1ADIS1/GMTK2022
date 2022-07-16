@@ -83,20 +83,19 @@ void AGMTK2020Projectile::OnShoot(FVector originLocation)
 	
 	auto physicsActor = Cast<UStaticMeshComponent>(this->GetRootComponent());
 
-	physicsActor->AddImpulse(GetActorRotation().Vector()*30000);
+	physicsActor->AddImpulse(GetActorRotation().Vector()*3000);
 	
 	FVector SpawnVector;
 	SpawnVector.X = FMath::FRandRange(-10000, 10000);
 	SpawnVector.Y = FMath::FRandRange(-10000, 10000);
 	SpawnVector.Z = FMath::FRandRange(-10000, 10000);
 	
-	physicsActor->AddAngularImpulseInRadians(SpawnVector);
+	physicsActor->AddAngularImpulseInRadians(SpawnVector*0.1);
 }
 
 
 int AGMTK2020Projectile::GetIdOfLowestSide()
 {
-		UE_LOG(LogTemp, Warning, TEXT("SSec"));
 	auto pairs = {
 		std::pair<UCubeSide*,int>(FirstSide,0),
 		std::pair<UCubeSide*,int>(SecondSide,1),
@@ -105,21 +104,17 @@ int AGMTK2020Projectile::GetIdOfLowestSide()
 		std::pair<UCubeSide*,int>(FifthSide,4),
 		std::pair<UCubeSide*,int>(SixthSide,5),
 	};
-		UE_LOG(LogTemp, Warning, TEXT("SSec2"));
 	int height = INT_MAX;
 	int id = -1;
 	for (auto Pair : pairs)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SSec3"));
 		int curHeight = Pair.first->GetComponentLocation().Z;
 		if (curHeight < height)
 		{
-		UE_LOG(LogTemp, Warning, TEXT("SSec4"));
 			height = curHeight;
 			id = Pair.second;
 		}
 	}
-		UE_LOG(LogTemp, Warning, TEXT("third"));
 	return id;
 }
 
@@ -139,13 +134,12 @@ void AGMTK2020Projectile::Tick(float DeltaTime)
 		SpawnVector.Y = FMath::FRandRange(-10000, 10000);
 		SpawnVector.Z = FMath::FRandRange(-10000, 10000);
 		if (staticMesh->GetPhysicsAngularVelocityInRadians().Size() <= 100)
-			staticMesh->AddAngularImpulseInRadians(SpawnVector*DeltaTime*100);
+			staticMesh->AddAngularImpulseInRadians(SpawnVector*DeltaTime*1);
 		SetActorLocation(rememberedPosition);
 		return;
 	}
 	if (inited && staticMesh->GetPhysicsLinearVelocity().Size()<10 && cont++ >= 2)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("FirstHeyHey"));
 		int indexToExecute = GetIdOfLowestSide();
 		Cast<UGlobalState>(GetGameInstance())->ExecuteFunctionByPowerIndex(indexToExecute, GetActorLocation());
 		Destroy();

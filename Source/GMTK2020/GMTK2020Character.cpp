@@ -88,7 +88,15 @@ void AGMTK2020Character::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-
+	
+	if (auto controller = GetController())
+	{
+		if (auto playerController = Cast<APlayerController>(controller))
+		{
+			playerController->bShowMouseCursor = false;
+			playerController->bEnableMouseOverEvents = false;
+		}
+	}
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));
 
@@ -135,11 +143,42 @@ void AGMTK2020Character::SetupPlayerInputComponent(class UInputComponent* Player
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("Turn", this, &AGMTK2020Character::TurnGuard);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AGMTK2020Character::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &AGMTK2020Character::LookUpGuard);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AGMTK2020Character::LookUpAtRate);
 }
+
+void AGMTK2020Character::TurnGuard(float Val)
+{
+	
+	if (auto controller = GetController())
+	{
+		if (auto playerController = Cast<APlayerController>(controller))
+		{
+			if (!playerController->bShowMouseCursor)
+			{
+				APawn::AddControllerYawInput(Val);
+			}
+		}
+	}
+}
+
+void AGMTK2020Character::LookUpGuard(float Val)
+{
+	
+	if (auto controller = GetController())
+	{
+		if (auto playerController = Cast<APlayerController>(controller))
+		{
+			if (!playerController->bShowMouseCursor)
+			{
+				APawn::AddControllerPitchInput(Val);
+			}
+		}
+	}
+}
+
 
 // Handle player collisions
 void AGMTK2020Character::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 

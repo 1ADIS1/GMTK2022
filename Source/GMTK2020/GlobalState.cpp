@@ -5,16 +5,17 @@
 
 #include "GMTK2020Character.h"
 #include "GMTK2020Projectile.h"
+#include "Kismet/GameplayStatics.h"
 
 typedef void (UGlobalState::*FunctionPtrType)(FVector);
 
 void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 {
+	CurrentLevel++;
 	Super::OnWorldChanged(OldWorld, NewWorld);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World init!"));
 	if (Powers == nullptr)
 	{
-
 		funcs[0] = &UGlobalState::PrintPosition;
 		funcs[1] = &UGlobalState::PrintPosition;
 		funcs[2] = &UGlobalState::PrintPosition;
@@ -26,14 +27,75 @@ void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 	}
 }
 
+bool UGlobalState::GetIsCardClicked(int Index)
+{
+	return CardClicked[Index];
+}
+
+void UGlobalState::ProcessCardClick(int Index)
+{
+	if (WaitingForCardClick && !CardClicked[Index] && !IsFinishVisible())
+	{
+		WaitingForCardClick = false;
+		PendingPowerId = CardPowerIds[Index];
+		CardClicked[Index] = true;
+		CardsClicked++;
+	}
+}
+
+void UGlobalState::ProcessButtonClick(int Index)
+{
+	if (!WaitingForCardClick)
+	{
+		bool isDebuffPending = IsDebuff[PendingPowerId];
+		if (isDebuffPending == GetIsDebuffOfPower(Index))
+		{
+			if (GetCostOfPower(Index) <= Blood)
+			{
+				WaitingForCardClick = true;
+				Blood -= GetCostOfPower(Index);
+				
+				Powers[Index] = *(new FDicePower());
+				Powers[Index].Initialize(PendingPowerId,this);
+
+				RotatingCube->InitSides();
+			}
+		}
+	}
+}
+UPaperSprite* UGlobalState::GetFullCardByPowerIndex(int Index) const
+{
+	return Powers[Index].FullCardSprite;
+}
+
+UPaperSprite* UGlobalState::GetFullCardByCardIndex(int Index) const
+{
+	return Powers[CardPowerIds[Index]].FullCardSprite;
+}
+
+int UGlobalState::GetIsDebuffOfPower(int Index) const
+{
+	return Powers[Index].IsDebuff;
+}
+bool UGlobalState::IsFinishVisible() const
+{
+	return WaitingForCardClick && CardsClicked >= 2;
+}
+
+void UGlobalState::ProcessFinishClick()
+{
+	FLatentActionInfo LatentInfo;
+	ChangeToLevel(CurrentLevel+1);
+}
+
 
 UPaperSprite* UGlobalState::GetSpriteByPowerIndex(int Index) const
 {
-	return Sprites[Index];
+	return Powers[Index].IconSprite;
 }
 UPaperSprite* UGlobalState::GetSpriteById(int Id) const
 {
-	return Powers[Id].IconSprite;
+	return Sprites[Id];
 }
 
 
@@ -42,13 +104,23 @@ FString UGlobalState::GetNameOfPower(int Index) const
 	return Powers[Index].CardName;
 }
 
-void UGlobalState::CreateEditableCube() const
+void UGlobalState::CreateEditableCube()
 {
+	CardsClicked = 0;
+	CardClicked[0]=false;
+	CardClicked[1]=false;
+	CardClicked[2]=false;
+	WaitingForCardClick = true;
+
+	CardPowerIds[0]=rand()%Names.Num();
+	CardPowerIds[1]=rand()%Names.Num();
+	CardPowerIds[2]=rand()%Names.Num();
+	
 	auto p = GetPrimaryPlayerController();
 	auto pLocation = p->GetFocalLocation();
 	auto pDirection = p->GetControlRotation().Vector();
 
-	auto spawnLocation = pLocation + pDirection*500;
+	auto spawnLocation = pLocation + pDirection*100;
 	
 	const FRotator SpawnRotation =p->GetControlRotation();
 
@@ -56,10 +128,11 @@ void UGlobalState::CreateEditableCube() const
 	FActorSpawnParameters ActorSpawnParams;
 	if (CubeClass!=nullptr)
 	{
-		
+		GetPrimaryPlayerController()->bShowMouseCursor = true;
+		GetPrimaryPlayerController()->bEnableMouseOverEvents = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SPAWNING CUBE"));
-		auto cube = GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
-		cube->AdjustForDiceEditor();
+		RotatingCube = GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
+		RotatingCube->AdjustForDiceEditor();
 	}else
 	{
 		
@@ -108,7 +181,8 @@ void FDicePower::Initialize(int Id, UGlobalState* glob)
 	this->id=Id;
 	this->globalState = glob;
 	this->IconSprite = glob->GetSpriteById(Id);
-	
+	this->IsDebuff = glob->IsDebuff[Id];
+	this->FullCardSprite = glob->FullCards[Id];
 	CostToReplace = glob->Costs[Id];
 	CardName = glob->Names[Id];
 }

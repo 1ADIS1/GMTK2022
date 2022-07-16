@@ -14,6 +14,7 @@ UCubeSide::UCubeSide()
 	icon = CreateDefaultSubobject<UPaperSpriteComponent>("Icon");
 	icon->SetupAttachment(this);
 	icon->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	icon->SetRelativeScale3D(FVector(0.5,0.5,0.5));
 	// ...
 }
 
