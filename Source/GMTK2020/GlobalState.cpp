@@ -2,7 +2,7 @@
 
 
 #include "GlobalState.h"
-
+#include "EngineUtils.h"
 #include "GMTK2020Character.h"
 #include "GMTK2020Projectile.h"
 #include "Kismet/GameplayStatics.h"
@@ -104,6 +104,15 @@ FString UGlobalState::GetNameOfPower(int Index) const
 	return Powers[Index].CardName;
 }
 
+template<typename T>
+void FindAllActors(UWorld* World, TArray<T*>& Out)
+{
+	for (TActorIterator<T> It(World); It; ++It)
+	{
+		Out.Add(*It);
+	}
+}
+
 void UGlobalState::CreateEditableCube()
 {
 	CardsClicked = 0;
@@ -128,6 +137,13 @@ void UGlobalState::CreateEditableCube()
 	FActorSpawnParameters ActorSpawnParams;
 	if (CubeClass!=nullptr)
 	{
+		TArray<AActor*> allActors;
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(),"DestroyOnUi",allActors);
+		for (auto actor : allActors)
+		{
+			if (actor != nullptr)
+				actor->Destroy();
+		}
 		GetPrimaryPlayerController()->bShowMouseCursor = true;
 		GetPrimaryPlayerController()->bEnableMouseOverEvents = true;
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SPAWNING CUBE"));

@@ -91,6 +91,7 @@ void AGMTK_GameMode::DisplayLevelTimer()
 void AGMTK_GameMode::DisplayDiceEditor()
 {
 	if (Dice_Editor_Widget_Class != nullptr) {
+		Level_Timer_Widget->RemoveFromViewport();
 		Dice_Editor_Widget = CreateWidget(GetWorld(), Dice_Editor_Widget_Class);
 		Dice_Editor_Widget->AddToViewport();
 		Cast<UGlobalState>(GetGameInstance())->CreateEditableCube();
