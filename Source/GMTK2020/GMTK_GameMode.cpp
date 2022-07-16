@@ -93,5 +93,6 @@ void AGMTK_GameMode::DisplayDiceEditor()
 	if (Dice_Editor_Widget_Class != nullptr) {
 		Dice_Editor_Widget = CreateWidget(GetWorld(), Dice_Editor_Widget_Class);
 		Dice_Editor_Widget->AddToViewport();
+		Cast<UGlobalState>(GetGameInstance())->CreateEditableCube();
 	}
 }
