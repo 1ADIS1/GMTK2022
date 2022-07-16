@@ -4,6 +4,7 @@
 #include "GlobalState.h"
 
 #include "GMTK2020Character.h"
+#include "GMTK2020Projectile.h"
 
 typedef void (UGlobalState::*FunctionPtrType)(FVector);
 
@@ -25,9 +26,30 @@ void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 	}
 }
 
+
+
 FString UGlobalState::GetNameOfPower(int Index) const
 {
 	return Powers[Index].CardName;
+}
+
+void UGlobalState::CreateEditableCube() const
+{
+	auto p =GetPrimaryPlayerController();
+	auto pLocation = p->GetFocalLocation();
+	auto pDirection = p->GetControlRotation().Vector();
+
+	auto spawnLocation = pLocation + pDirection*100;
+	
+	const FRotator SpawnRotation =p->GetControlRotation();
+
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	if (CubeClass!=nullptr)
+	{
+		
+		GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
+	}
 }
 
 int UGlobalState::GetCostOfPower(int Index) const

@@ -23,10 +23,15 @@ public:
 	UWorld* OldWorld,
 	UWorld* NewWorld
 ) override;
+	
+	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
+	TSubclassOf<class AGMTK2020Projectile> CubeClass;
 
 	UFUNCTION(BlueprintCallable)
 	FString GetNameOfPower(int index) const;
 
+	UFUNCTION(BlueprintCallable)
+	void CreateEditableCube() const;
 	
 	UFUNCTION(BlueprintCallable)
 	int GetCostOfPower(int index) const;
