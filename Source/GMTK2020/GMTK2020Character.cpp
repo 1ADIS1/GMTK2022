@@ -163,7 +163,10 @@ void AGMTK2020Character::OnFire()
 				ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
 				// spawn the projectile at the muzzle
-				World->SpawnActor<AGMTK2020Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+				if (auto proj = World->SpawnActor<AGMTK2020Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams))
+				{
+					proj->OnShoot(GetActorLocation());
+				}
 			}
 		}
 	}
