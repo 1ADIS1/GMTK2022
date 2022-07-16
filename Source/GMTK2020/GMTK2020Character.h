@@ -71,7 +71,7 @@ public:
 	FVector GunOffset;
 
 	/** Projectile class to spawn */
-	UPROPERTY(EditDefaultsOnly, Category=Projectile)
+	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
 	TSubclassOf<class AGMTK2020Projectile> ProjectileClass;
 
 	/** Sound to play each time we fire */
