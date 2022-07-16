@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Misc/OutputDeviceNull.h"
 
 #include "GMTK_GameMode.generated.h"
 
@@ -59,6 +60,11 @@ public:
 		TSubclassOf<UUserWidget> Level_Timer_Widget_Class;
 	UUserWidget* Level_Timer_Widget;
 
+	// Dice editor
+	UPROPERTY(EditAnywhere, Category = "UI HUD")
+		TSubclassOf<UUserWidget> Dice_Editor_Widget_Class;
+	UUserWidget* Dice_Editor_Widget;
+
 	bool bLevelCompleted;
 
 	void SpawnCooldown();
@@ -66,4 +72,6 @@ public:
 	void OnLevelComplete();
 
 	void DisplayLevelTimer();
+
+	void DisplayDiceEditor();
 };

@@ -52,11 +52,6 @@ void AGMTK_GameMode::Tick(float DeltaTime)
 		if (bLevelCompleted == true) return;
 
 		bLevelCompleted = true;
-		
-		// Make character a ragdoll
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Call from GameMode: level complete!"));
-		}
 
 		FTimerHandle UnusedHandle;
 		GetWorldTimerManager().SetTimer(
@@ -71,9 +66,7 @@ void AGMTK_GameMode::Tick(float DeltaTime)
 
 void AGMTK_GameMode::OnLevelComplete()
 {
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Display dice interface"));
-	}
+	DisplayDiceEditor();
 }
 
 void AGMTK_GameMode::SpawnCooldown()
@@ -92,5 +85,13 @@ void AGMTK_GameMode::DisplayLevelTimer()
 	if (Level_Timer_Widget_Class != nullptr) {
 		Level_Timer_Widget = CreateWidget(GetWorld(), Level_Timer_Widget_Class);
 		Level_Timer_Widget->AddToViewport();
+	}
+}
+
+void AGMTK_GameMode::DisplayDiceEditor()
+{
+	if (Dice_Editor_Widget_Class != nullptr) {
+		Dice_Editor_Widget = CreateWidget(GetWorld(), Dice_Editor_Widget_Class);
+		Dice_Editor_Widget->AddToViewport();
 	}
 }

@@ -103,6 +103,9 @@ void AGMTK2020Character::BeginPlay()
 		VR_Gun->SetHiddenInGame(true, true);
 		Mesh1P->SetHiddenInGame(false, true);
 	}
+
+	// Setup player collisions
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AGMTK2020Character::OnCompHit);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -136,6 +139,17 @@ void AGMTK2020Character::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("TurnRate", this, &AGMTK2020Character::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AGMTK2020Character::LookUpAtRate);
+}
+
+// Handle player collisions
+void AGMTK2020Character::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->ActorHasTag("Demon")) {
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Player damaged!"));
+		}
+	}
 }
 
 void AGMTK2020Character::OnFire()
