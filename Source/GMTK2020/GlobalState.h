@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PaperSpriteComponent.h"
 #include "Engine/GameInstance.h"
 #include "GlobalState.generated.h"
 
@@ -19,6 +20,16 @@ private:
 	
 	
 public:
+
+	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
+	TArray<UPaperSprite*> Sprites;
+
+	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
+	TArray<FString> Names;
+
+	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
+	TArray<int> Costs;
+	
 	void OnWorldChanged(
 	UWorld* OldWorld,
 	UWorld* NewWorld
@@ -26,15 +37,21 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
 	TSubclassOf<class AGMTK2020Projectile> CubeClass;
+	
+	UFUNCTION(BlueprintCallable)
+	UPaperSprite* GetSpriteById(int Id) const;
+	
+	UFUNCTION(BlueprintCallable)
+	UPaperSprite* GetSpriteByPowerIndex(int Index) const;
 
 	UFUNCTION(BlueprintCallable)
-	FString GetNameOfPower(int index) const;
+	FString GetNameOfPower(int Index) const;
 
 	UFUNCTION(BlueprintCallable)
 	void CreateEditableCube() const;
 	
 	UFUNCTION(BlueprintCallable)
-	int GetCostOfPower(int index) const;
+	int GetCostOfPower(int Index) const;
 	
 
 	
@@ -61,6 +78,7 @@ public:
 	void ActivateAbility(FVector Position);
 	int CostToReplace;
 	FString CardName;
+	UPaperSprite* IconSprite;
 	int id;
 private:
 	FunctionPtrType func;

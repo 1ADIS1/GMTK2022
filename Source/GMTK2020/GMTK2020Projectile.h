@@ -52,9 +52,14 @@ private:
 	
 	bool inited = false;
 	int cont = 0;
+	bool diceEditored = false;
+	FVector rememberedPosition;
 public:
 	AGMTK2020Projectile();
+	void InitSides();
 
+
+	void AdjustForDiceEditor();
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

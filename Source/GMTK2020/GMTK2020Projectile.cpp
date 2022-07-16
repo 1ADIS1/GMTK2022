@@ -25,7 +25,6 @@ AGMTK2020Projectile::AGMTK2020Projectile()
 
 	// Die after many seconds by default
 	InitialLifeSpan = 999.0f;
-
 	
 	FirstSide = CreateDefaultSubobject<UCubeSide>(TEXT("Side1"));
 	FirstSide->SetupAttachment(staticMesh);
@@ -47,14 +46,44 @@ AGMTK2020Projectile::AGMTK2020Projectile()
 	
 }
 
+void  AGMTK2020Projectile::InitSides()
+{
+	auto gameInstance =Cast<UGlobalState>(GetGameInstance());
+	auto pairs = {
+		std::pair<UCubeSide*,int>(FirstSide,0),
+		std::pair<UCubeSide*,int>(SecondSide,1),
+		std::pair<UCubeSide*,int>(ThirdSide,2),
+		std::pair<UCubeSide*,int>(FourthSide,3),
+		std::pair<UCubeSide*,int>(FifthSide,4),
+		std::pair<UCubeSide*,int>(SixthSide,5),
+	};
+	
+	for (auto Pair : pairs)
+	{
+		Pair.first->icon->SetSprite(gameInstance->GetSpriteByPowerIndex(Pair.second));
+	}
+}
+
+void AGMTK2020Projectile::AdjustForDiceEditor()
+{
+	InitSides();
+	diceEditored = true;
+	staticMesh->SetEnableGravity(false);
+
+	auto prevLocation = GetActorLocation();
+	prevLocation+= FVector(0,0,100);
+	SetActorLocation(prevLocation);
+	rememberedPosition = GetActorLocation();
+}
+
 void AGMTK2020Projectile::OnShoot(FVector originLocation)
 {
-
+	InitSides();
 	inited = true;
 	
 	auto physicsActor = Cast<UStaticMeshComponent>(this->GetRootComponent());
 
-	physicsActor->AddImpulse(GetActorRotation().Vector()*300000);
+	physicsActor->AddImpulse(GetActorRotation().Vector()*30000);
 	
 	FVector SpawnVector;
 	SpawnVector.X = FMath::FRandRange(-10000, 10000);
@@ -103,6 +132,17 @@ void AGMTK2020Projectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor
 void AGMTK2020Projectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (diceEditored)
+	{
+		FVector SpawnVector;
+		SpawnVector.X = FMath::FRandRange(-10000, 10000);
+		SpawnVector.Y = FMath::FRandRange(-10000, 10000);
+		SpawnVector.Z = FMath::FRandRange(-10000, 10000);
+		if (staticMesh->GetPhysicsAngularVelocityInRadians().Size() <= 100)
+			staticMesh->AddAngularImpulseInRadians(SpawnVector*DeltaTime*100);
+		SetActorLocation(rememberedPosition);
+		return;
+	}
 	if (inited && staticMesh->GetPhysicsLinearVelocity().Size()<10 && cont++ >= 2)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FirstHeyHey"));

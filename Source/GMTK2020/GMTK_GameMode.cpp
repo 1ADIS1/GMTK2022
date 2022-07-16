@@ -3,6 +3,7 @@
 
 #include "GMTK_GameMode.h"
 
+#include "GlobalState.h"
 #include "GMTK2020HUD.h"
 #include "GMTK2020Character.h"
 #include "UObject/ConstructorHelpers.h"

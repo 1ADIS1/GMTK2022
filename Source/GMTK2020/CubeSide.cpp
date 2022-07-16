@@ -2,7 +2,7 @@
 
 
 #include "CubeSide.h"
-
+#include "PaperSpriteComponent.h"
 
 // Sets default values for this component's properties
 UCubeSide::UCubeSide()
@@ -11,6 +11,9 @@ UCubeSide::UCubeSide()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	icon = CreateDefaultSubobject<UPaperSpriteComponent>("Icon");
+	icon->SetupAttachment(this);
+	icon->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	// ...
 }
 
@@ -19,7 +22,6 @@ UCubeSide::UCubeSide()
 void UCubeSide::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// ...
 	
 }

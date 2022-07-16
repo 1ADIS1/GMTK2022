@@ -7,6 +7,7 @@
 #include "CubeSide.generated.h"
 
 
+class UPaperSpriteComponent;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GMTK2020_API UCubeSide : public USceneComponent
 {
@@ -18,7 +19,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	int PowerIndex;
-	
+
+	UPROPERTY(VisibleDefaultsOnly, Category=Components)
+	UPaperSpriteComponent* icon;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

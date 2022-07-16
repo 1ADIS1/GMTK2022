@@ -27,6 +27,15 @@ void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 }
 
 
+UPaperSprite* UGlobalState::GetSpriteByPowerIndex(int Index) const
+{
+	return Sprites[Index];
+}
+UPaperSprite* UGlobalState::GetSpriteById(int Id) const
+{
+	return Powers[Id].IconSprite;
+}
+
 
 FString UGlobalState::GetNameOfPower(int Index) const
 {
@@ -35,11 +44,11 @@ FString UGlobalState::GetNameOfPower(int Index) const
 
 void UGlobalState::CreateEditableCube() const
 {
-	auto p =GetPrimaryPlayerController();
+	auto p = GetPrimaryPlayerController();
 	auto pLocation = p->GetFocalLocation();
 	auto pDirection = p->GetControlRotation().Vector();
 
-	auto spawnLocation = pLocation + pDirection*100;
+	auto spawnLocation = pLocation + pDirection*500;
 	
 	const FRotator SpawnRotation =p->GetControlRotation();
 
@@ -48,7 +57,13 @@ void UGlobalState::CreateEditableCube() const
 	if (CubeClass!=nullptr)
 	{
 		
-		GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SPAWNING CUBE"));
+		auto cube = GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
+		cube->AdjustForDiceEditor();
+	}else
+	{
+		
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("NOT SPAWNING CUBE"));
 	}
 }
 
@@ -92,32 +107,10 @@ void FDicePower::Initialize(int Id, UGlobalState* glob)
 {
 	this->id=Id;
 	this->globalState = glob;
+	this->IconSprite = glob->GetSpriteById(Id);
 	
-	TList<FString>* names = new TList<FString>("first name",
-	new TList<FString>("Second name",
-	new TList<FString>("3 name",
-	new TList<FString>("4 name",
-	new TList<FString>("5 name",
-		new TList<FString>("6 name"))))));
-	TList<int>* costs = new TList<int>(1,
-	new TList<int>(2,
-	new TList<int>(3,
-	new TList<int>(4,
-	new TList<int>(5,
-		new TList<int>(6))))));;
-	
-	auto initialNames = names;
-	auto initialCosts = costs;
-	
-	for (int i = 0; i < Id;++i)
-	{
-		costs = costs->Next;
-		names = names->Next;
-	}
-	CostToReplace = costs->Element;
-	CardName = names->Element;
-	delete initialCosts;
-	delete initialNames;
+	CostToReplace = glob->Costs[Id];
+	CardName = glob->Names[Id];
 }
 
 void FDicePower::ActivateAbility(FVector Position)
