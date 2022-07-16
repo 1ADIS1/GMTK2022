@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{0004EB67-08DA-5EB6-B485-D0A21D7102B7}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "GMTK2020",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
