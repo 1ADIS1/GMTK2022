@@ -85,3 +85,6 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+#Thrash with versions
+GMTK2020.uproject
