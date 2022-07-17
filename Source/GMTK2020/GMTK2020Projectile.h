@@ -48,6 +48,9 @@ public:
 	UPROPERTY(BlueprintReadWrite ,EditAnywhere, Category=Projectile)
 	UStaticMeshComponent* staticMesh;
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void PlayDiceSound();
+
 	/** Projectile movement component */
 	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	// UProjectileMovementComponent* ProjectileMovement;
