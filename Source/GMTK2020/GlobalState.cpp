@@ -37,6 +37,12 @@ void UGlobalState::MakeExplosion(FVector vec)
 			demon->TryTakeDamage();
 		}
 	}
+	
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	auto spawnLocation = vec;
+	
+	auto spawnedMesh = GetWorld()->SpawnActor<AActor>(ExplosionType,spawnLocation,FRotator(),ActorSpawnParams);
 }
 
 void UGlobalState::SpeedUpDemons(FVector vec)
@@ -71,6 +77,13 @@ void UGlobalState::FreezeDemons(FVector vec)
 			demon->ActivateSlowDown();
 		}
 	}
+	
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+	auto spawnLocation = vec;
+	
+	auto spawnedMesh = GetWorld()->SpawnActor<AActor>(FreezeEffectType,spawnLocation,FRotator(),ActorSpawnParams);
+	
 }
 
 void UGlobalState::SpawnTurret(FVector Vector)
@@ -105,8 +118,14 @@ void UGlobalState::SpawnNewDemons(FVector Vector)
 
 void UGlobalState::SpawnObstacles(FVector Vector)
 {
-	// TODO: spawn obstacle
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OBSTACLE SPAWN"));
+
+	
+	//Set Spawn Collision Handling Override
+	FActorSpawnParameters ActorSpawnParams;
+		auto spawnLocation = Vector;
+	
+	auto spawnedMesh = GetWorld()->SpawnActor<AActor>(ObstacleClass,spawnLocation,FRotator(),ActorSpawnParams);
 }
 
 void UGlobalState::FreezePlayer(FVector Vector)
@@ -268,8 +287,10 @@ void UGlobalState::CreateEditableCube()
 	CardPowerIds[0]=rand()%Names.Num();
 	CardPowerIds[1]=rand()%Names.Num();
 	CardPowerIds[2]=rand()%Names.Num();
-	
 
+	auto playerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(),0);
+	auto upVec = playerPawn->GetActorUpVector();
+	upVec.Normalize();
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
 	if (CubeClass!=nullptr)
@@ -288,7 +309,8 @@ void UGlobalState::CreateEditableCube()
 		auto pLocation = p->GetFocalLocation();
 		auto pDirection = p->GetControlRotation().Vector();
 
-		auto spawnLocation = pLocation + pDirection*100;
+		
+		auto spawnLocation = pLocation + pDirection*100 + upVec*20;
 	
 		const FRotator SpawnRotation =p->GetControlRotation();
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SPAWNING CUBE"));
@@ -312,6 +334,7 @@ void UGlobalState::InitializeDefaultPowers()
 	Powers = new FDicePower[6];;
 	for (int i = 0; i < 6;++i)
 	{
+		
 		Powers[i].Initialize(i,this);
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("" + Powers[i].CardName));
 	}

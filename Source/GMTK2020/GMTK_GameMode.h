@@ -59,6 +59,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UI HUD")
 		TSubclassOf<UUserWidget> Level_Timer_Widget_Class;
 	UUserWidget* Level_Timer_Widget;
+	
+	UPROPERTY(EditAnywhere, Category = "UI HUD")
+		TSubclassOf<UUserWidget> Health_Widget_Class;
+	UUserWidget* Health_Widget;
 
 	// Dice editor
 	UPROPERTY(EditAnywhere, Category = "UI HUD")

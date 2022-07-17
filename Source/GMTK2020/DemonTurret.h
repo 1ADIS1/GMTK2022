@@ -15,7 +15,11 @@ class GMTK2020_API UDemonTurret : public USceneComponent
 public:	
 	// Sets default values for this component's properties
 	UDemonTurret();
+	void Shoot();
+	void Die();
 
+	UPROPERTY(EditDefaultsOnly, Category=Effects)
+	TSubclassOf<class AGenericProjectile> ProjectileType;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

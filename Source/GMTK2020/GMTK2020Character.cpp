@@ -286,21 +286,28 @@ void AGMTK2020Character::LookUpGuard(float Val)
 	}
 }
 
+void AGMTK2020Character::TryTakeDamage()
+{
+	if ( InvinsibilityFrameDurationLeft <= 0)
+	{
+		InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
+		Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
+	}
+}
+
 
 // Handle player collisions
 void AGMTK2020Character::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, OtherActor->GetHumanReadableName());
 	if (OtherActor->ActorHasTag("Demon")) {
 
 
 		if (!isEnraged)		
 		{
-			if ( InvinsibilityFrameDurationLeft <= 0)
-			{
-				InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
-				Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
-			}
+			TryTakeDamage();
 		}else if (auto demon = Cast<ADemonChar>(OtherActor))
 		{
 			demon->TryTakeDamage();

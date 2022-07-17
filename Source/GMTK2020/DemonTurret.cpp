@@ -3,6 +3,10 @@
 
 #include "DemonTurret.h"
 
+#include "GenericProjectile.h"
+#include "GMTK2020Character.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values for this component's properties
 UDemonTurret::UDemonTurret()
@@ -14,12 +18,48 @@ UDemonTurret::UDemonTurret()
 	// ...
 }
 
+void UDemonTurret::Shoot()
+{
+
+
+	TArray<AActor*> allActors;
+	auto playerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(),0);
+
+	if (playerPawn)
+	{
+		if (auto player = Cast<AGMTK2020Character>(playerPawn))
+		{
+			auto len = (player->GetActorLocation() - GetComponentLocation()).Size();
+			if (len < 700)
+			{
+				FActorSpawnParameters Parameters;
+				auto proj = GetWorld()->SpawnActor<AGenericProjectile>(ProjectileType,GetComponentLocation() ,GetComponentRotation(),Parameters);
+				if (proj)
+				{
+					proj->InitAll(proj->GetActorLocation(),player->GetActorLocation(),"Player");
+				}	
+			}
+		}
+	}
+	
+	FTimerHandle UnusedHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		UnusedHandle,
+		this,
+		&UDemonTurret::Shoot,
+		1.0f,
+		false
+	);
+}
+
+
 
 // Called when the game starts
 void UDemonTurret::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Shoot();
 	// ...
 	
 }

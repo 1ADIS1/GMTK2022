@@ -3,6 +3,8 @@
 
 #include "GenericProjectile.h"
 
+#include "DemonChar.h"
+#include "GMTK2020Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 
@@ -51,9 +53,16 @@ void AGenericProjectile::BeginPlay()
 
 void AGenericProjectile::ProcessOverlap(AActor* otherActor)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, otherActor->GetHumanReadableName());
 	if (otherActor->ActorHasTag(TagToKill))
 	{
-		otherActor->Destroy();
+		if (auto pl = Cast<AGMTK2020Character>(otherActor))
+		{
+			pl->TryTakeDamage();
+		}else if (auto demon = Cast<ADemonChar>(otherActor))
+		{
+			demon->TryTakeDamage();
+		}
 		Destroy();
 	}
 }

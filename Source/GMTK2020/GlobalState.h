@@ -89,6 +89,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category=Effects)
 	TSubclassOf<class AActor> FreezeEffectType;
+	
+	UPROPERTY(EditDefaultsOnly, Category=Effects)
+	TSubclassOf<class AActor> ObstacleClass;
 
 	UPROPERTY(EditDefaultsOnly, Category=Effects)
 	TSubclassOf<class ATurretChar> TurretType;
