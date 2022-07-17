@@ -83,7 +83,7 @@ void AGMTK2020Projectile::AdjustForDiceEditor()
 	staticMesh->SetEnableGravity(false);
 
 	auto prevLocation = GetActorLocation();
-	prevLocation+= FVector(0,0,100);
+	//prevLocation+= FVector(f0,0,100);
 	SetActorLocation(prevLocation);
 	rememberedPosition = GetActorLocation();
 	

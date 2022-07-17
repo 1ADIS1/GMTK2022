@@ -86,6 +86,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=Effects)
 	TSubclassOf<class AActor> ExplosionType;
 
+	
+	UPROPERTY(EditDefaultsOnly, Category=Effects)
+	TSubclassOf<class AActor> FreezeEffectType;
+
+	UPROPERTY(EditDefaultsOnly, Category=Effects)
+	TSubclassOf<class ATurretChar> TurretType;
 
 	UFUNCTION(BlueprintCallable)
 	int GetPlayerHp();

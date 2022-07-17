@@ -8,6 +8,8 @@
 #include "GMTK2020Character.h"
 #include "GMTK2020Projectile.h"
 #include "GMTK_GameMode.h"
+#include "Turret.h"
+#include "TurretChar.h"
 #include "Kismet/GameplayStatics.h"
 
 typedef void (UGlobalState::*FunctionPtrType)(FVector);
@@ -74,7 +76,11 @@ void UGlobalState::FreezeDemons(FVector vec)
 void UGlobalState::SpawnTurret(FVector Vector)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("TUwwET"));
-	// TODO: turret spawn
+	FActorSpawnParameters Parameters;
+
+	auto SpawnLocation = Vector + FVector(0,0,300);
+
+	GetWorld()->SpawnActor<ATurretChar>(TurretType,SpawnLocation,FRotator(),Parameters);
 }
 
 void UGlobalState::MakeDiceDamagey(FVector Vector)
