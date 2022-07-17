@@ -2,6 +2,8 @@
 
 
 #include "GlobalState.h"
+
+#include "DemonChar.h"
 #include "EngineUtils.h"
 #include "GMTK2020Character.h"
 #include "GMTK2020Projectile.h"
@@ -26,12 +28,12 @@ void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World init!"));
 	if (Powers == nullptr)
 	{
-		funcs[0] = &UGlobalState::PrintPosition;
-		funcs[1] = &UGlobalState::PrintPosition;
-		funcs[2] = &UGlobalState::PrintPosition;
-		funcs[3] = &UGlobalState::PrintPosition;
-		funcs[4] = &UGlobalState::PrintPosition;
-		funcs[5] = &UGlobalState::PrintPosition;
+		funcs[0] = &UGlobalState::MakeExplosion;
+		funcs[1] = &UGlobalState::SpeedUpDemons;
+		funcs[2] = &UGlobalState::SpeedUpDemons;
+		funcs[3] = &UGlobalState::SpeedUpDemons;
+		funcs[4] = &UGlobalState::MakeExplosion;
+		funcs[5] = &UGlobalState::MakeExplosion;
 		
 		InitializeDefaultPowers();
 	}
@@ -140,13 +142,6 @@ void UGlobalState::CreateEditableCube()
 	CardPowerIds[1]=rand()%Names.Num();
 	CardPowerIds[2]=rand()%Names.Num();
 	
-	auto p = GetPrimaryPlayerController();
-	auto pLocation = p->GetFocalLocation();
-	auto pDirection = p->GetControlRotation().Vector();
-
-	auto spawnLocation = pLocation + pDirection*100;
-	
-	const FRotator SpawnRotation =p->GetControlRotation();
 
 	//Set Spawn Collision Handling Override
 	FActorSpawnParameters ActorSpawnParams;
@@ -161,6 +156,14 @@ void UGlobalState::CreateEditableCube()
 		}
 		GetPrimaryPlayerController()->bShowMouseCursor = true;
 		GetPrimaryPlayerController()->bEnableMouseOverEvents = true;
+		
+		auto p = GetPrimaryPlayerController();
+		auto pLocation = p->GetFocalLocation();
+		auto pDirection = p->GetControlRotation().Vector();
+
+		auto spawnLocation = pLocation + pDirection*100;
+	
+		const FRotator SpawnRotation =p->GetControlRotation();
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SPAWNING CUBE"));
 		RotatingCube = GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
 		RotatingCube->AdjustForDiceEditor();
@@ -192,10 +195,43 @@ void UGlobalState::PrintPosition(FVector vec)
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("" + vec.ToString()));
 }
 
+void UGlobalState::MakeExplosion(FVector vec)
+{
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
+
+	for (auto actor : allActors)
+	{
+		if ((actor->GetActorLocation() - vec).Size() <= 450)
+		{
+			actor->Destroy();
+		}
+	}
+}
+
+void UGlobalState::SpeedUpDemons(FVector vec)
+{
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
+
+	for (auto actor : allActors)
+	{
+		if ((actor->GetActorLocation() - vec).Size() <= 450)
+		{
+			if (auto demon = Cast<ADemonChar>(actor))
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DEMON SPED UP"));
+				demon->ActivateSpeedUp();
+			}
+		}
+	}
+}
+
+
+
 
 void UGlobalState::ExecuteFunctionByPowerIndex(int index,FVector vec)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::FromInt(index));
 	//Special Thanks to Epic for this Syntax
 	(this->* (funcs[Powers[index].id]))(vec);
 }

@@ -187,10 +187,8 @@ void AGMTK2020Character::LookUpGuard(float Val)
 void AGMTK2020Character::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Coll"));
 	if (OtherActor->ActorHasTag("Demon") && InvinsibilityFrameDurationLeft <= 0) {
 		{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Act"));
 			InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
 			Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
 		}
