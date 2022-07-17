@@ -93,6 +93,11 @@ public:
 			UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
+
+	float InvinsibilityFrameDurationLeft = 0;
+	float invinsibilityFrameDurationTotal = 1;
+
+	void Tick(float DeltaSeconds) override;
 	
 	/** Fires a projectile. */
 	void OnFire();

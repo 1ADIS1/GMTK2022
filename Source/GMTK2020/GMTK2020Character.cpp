@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GMTK2020Character.h"
+
+#include "GlobalState.h"
 #include "GMTK2020Projectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
@@ -19,6 +21,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
 AGMTK2020Character::AGMTK2020Character()
 {
+	PrimaryActorTick.bCanEverTick = true;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 
@@ -184,11 +187,20 @@ void AGMTK2020Character::LookUpGuard(float Val)
 void AGMTK2020Character::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor->ActorHasTag("Demon")) {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, TEXT("Coll"));
+	if (OtherActor->ActorHasTag("Demon") && InvinsibilityFrameDurationLeft <= 0) {
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Player damaged!"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Act"));
+			InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
+			Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
 		}
 	}
+}
+
+void AGMTK2020Character::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	InvinsibilityFrameDurationLeft -= DeltaSeconds;
 }
 
 void AGMTK2020Character::OnFire()

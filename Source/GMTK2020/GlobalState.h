@@ -18,6 +18,8 @@ class GMTK2020_API UGlobalState : public UGameInstance
 	GENERATED_BODY()
 
 private:
+	int PlayerHp = 6;
+	
 	int CardsClicked = 0;
 	
 	bool CardClicked[3]{false,false,false};
@@ -36,7 +38,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ChangeToLevel(int LevelIndex);
-	
+	void DamagePlayer();
+
 	UPROPERTY(EditAnywhere,Category=Blood)
 	int Blood = 100;
 
@@ -67,6 +70,8 @@ public:
 	TSubclassOf<class AGMTK2020Projectile> CubeClass;
 
 
+	UFUNCTION(BlueprintCallable)
+	int GetPlayerHp();
 	
 	UFUNCTION(BlueprintCallable)
 	bool GetIsCardClicked(int Index);

@@ -9,9 +9,19 @@
 
 typedef void (UGlobalState::*FunctionPtrType)(FVector);
 
+void UGlobalState::DamagePlayer()
+{
+	PlayerHp--;
+	if (PlayerHp <= 0)
+	{
+		ChangeToLevel(CurrentLevel);
+	}
+}
+
 void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 {
 	CurrentLevel++;
+	PlayerHp = 6;
 	Super::OnWorldChanged(OldWorld, NewWorld);
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World init!"));
 	if (Powers == nullptr)
@@ -25,6 +35,11 @@ void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 		
 		InitializeDefaultPowers();
 	}
+}
+
+int UGlobalState::GetPlayerHp()
+{
+	return PlayerHp;
 }
 
 bool UGlobalState::GetIsCardClicked(int Index)
