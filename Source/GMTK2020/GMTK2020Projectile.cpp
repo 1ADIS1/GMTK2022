@@ -2,6 +2,7 @@
 
 #include "GMTK2020Projectile.h"
 
+#include "DemonChar.h"
 #include "GlobalState.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
@@ -17,7 +18,7 @@ AGMTK2020Projectile::AGMTK2020Projectile()
 	
 	// Use a sphere as a simple collision representation
 	//staticMesh->BodyInstance.SetCollisionProfileName("Projectile");
-	staticMesh->OnComponentHit.AddDynamic(this, &AGMTK2020Projectile::OnHit);		// set up a notification for when this component hits something blocking
+	// staticMesh->OnComponentHit.AddDynamic(this, &AGMTK2020Projectile::OnHit);		// set up a notification for when this component hits something blocking
 
 	// Players can't walk on it
 	staticMesh->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
@@ -64,6 +65,17 @@ void  AGMTK2020Projectile::InitSides()
 	}
 }
 
+void AGMTK2020Projectile::HitHappened(AActor* otherActor)
+{
+	if (!IsDamagey)
+		return;
+	if ( auto demon = Cast<ADemonChar>(otherActor))
+	{
+		demon->TryTakeDamage();
+	}
+
+}
+
 void AGMTK2020Projectile::AdjustForDiceEditor()
 {
 	InitSides();
@@ -74,9 +86,11 @@ void AGMTK2020Projectile::AdjustForDiceEditor()
 	prevLocation+= FVector(0,0,100);
 	SetActorLocation(prevLocation);
 	rememberedPosition = GetActorLocation();
+	
+	InitializeMaterial(0);
 }
 
-void AGMTK2020Projectile::OnShoot(FVector originLocation)
+void AGMTK2020Projectile::OnShoot(FVector originLocation, bool isDamagey)
 {
 	InitSides();
 	inited = true;
@@ -91,6 +105,9 @@ void AGMTK2020Projectile::OnShoot(FVector originLocation)
 	SpawnVector.Z = FMath::FRandRange(-10000, 10000);
 	
 	physicsActor->AddAngularImpulseInRadians(SpawnVector*0.1);
+	this->IsDamagey = isDamagey;
+
+	InitializeMaterial(isDamagey? 1 : 0);
 }
 
 
@@ -130,10 +147,10 @@ void AGMTK2020Projectile::Tick(float DeltaTime)
 	if (diceEditored)
 	{
 		FVector SpawnVector;
-		SpawnVector.X = FMath::FRandRange(-10000, 10000);
-		SpawnVector.Y = FMath::FRandRange(-10000, 10000);
-		SpawnVector.Z = FMath::FRandRange(-10000, 10000);
-		if (staticMesh->GetPhysicsAngularVelocityInRadians().Size() <= 25)
+		SpawnVector.X = FMath::FRandRange(-100, 100);
+		SpawnVector.Y = FMath::FRandRange(-100, 000);
+		SpawnVector.Z = FMath::FRandRange(-100, 100);
+		if (staticMesh->GetPhysicsAngularVelocityInRadians().Size() <= 15)
 			staticMesh->AddAngularImpulseInRadians(SpawnVector*DeltaTime*1);
 		SetActorLocation(rememberedPosition);
 		return;

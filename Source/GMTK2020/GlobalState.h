@@ -66,7 +66,15 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
 	TArray<FName> Levels;
-	
+
+	void FreezeDemons(FVector Vector);
+	void SpawnTurret(FVector Vector);
+	void MakeDiceDamagey(FVector Vector);
+	void SpawnNewDemons(FVector Vector);
+	void SpawnObstacles(FVector Vector);
+	void FreezePlayer(FVector Vector);
+	void GivePlayerAKnife(FVector Vector);
+	void SpeedUpPlayer(FVector Vector);
 	void OnWorldChanged(
 	UWorld* OldWorld,
 	UWorld* NewWorld

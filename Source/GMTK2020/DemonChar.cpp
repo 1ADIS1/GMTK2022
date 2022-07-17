@@ -18,12 +18,25 @@ ADemonChar::ADemonChar()
 void ADemonChar::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	InitializeMaterial(0);
+}
+
+void ADemonChar::TryTakeDamage()
+{
+	if (InvinsibilityFrameDurationLeft <= 0) 
+	{
+		InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
+		Hp--;
+		if (Hp <= 0)
+			Destroy();
+		
+	}
 }
 
 // Called every frame
 void ADemonChar::Tick(float DeltaTime)
 {
+	InvinsibilityFrameDurationLeft -= DeltaTime;
 	Super::Tick(DeltaTime);
 
 }
@@ -32,7 +45,6 @@ void ADemonChar::Tick(float DeltaTime)
 void ADemonChar::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void ADemonChar::ActivateSpeedUp()
@@ -41,6 +53,10 @@ void ADemonChar::ActivateSpeedUp()
 	if (DefaultCharSpeed == -1)
 	{
 		DefaultCharSpeed = charMov->MaxWalkSpeed;
+	}
+	if (charMov->MaxWalkSpeed != DefaultCharSpeed)
+	{
+		return;
 	}
 	charMov->MaxWalkSpeed = DefaultCharSpeed*2;
 	
@@ -52,6 +68,7 @@ void ADemonChar::ActivateSpeedUp()
 		3.0f,
 		false
 	);
+	InitializeMaterial(2);
 }
 
 void ADemonChar::ResetSpeed()
@@ -59,5 +76,30 @@ void ADemonChar::ResetSpeed()
 	
 	auto charMov = FindComponentByClass<UCharacterMovementComponent>();
 	charMov->MaxWalkSpeed = DefaultCharSpeed;
+	InitializeMaterial(0);
 	
+}
+
+void ADemonChar::ActivateSlowDown()
+{
+	auto charMov = FindComponentByClass<UCharacterMovementComponent>();
+	if (DefaultCharSpeed == -1)
+	{
+		DefaultCharSpeed = charMov->MaxWalkSpeed;
+	}
+	if (charMov->MaxWalkSpeed != DefaultCharSpeed)
+	{
+		return;
+	}
+	charMov->MaxWalkSpeed = DefaultCharSpeed*0.5;
+	
+	FTimerHandle UnusedHandle;
+	GetWorldTimerManager().SetTimer(
+		UnusedHandle,
+		this,
+		&ADemonChar::ResetSpeed,
+		3.0f,
+		false
+	);
+	InitializeMaterial(1);
 }

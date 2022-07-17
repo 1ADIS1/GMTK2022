@@ -39,8 +39,13 @@ class AGMTK2020Projectile : public AActor
 	UPROPERTY(VisibleDefaultsOnly, Category=Sides)
 	UCubeSide* SixthSide;
 
+public:
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void InitializeMaterial(int status);
+	
 	/** Sphere collision component */
-	UPROPERTY(EditAnywhere, Category=Projectile)
+	UPROPERTY(BlueprintReadWrite ,EditAnywhere, Category=Projectile)
 	UStaticMeshComponent* staticMesh;
 
 	/** Projectile movement component */
@@ -49,7 +54,7 @@ class AGMTK2020Projectile : public AActor
 
 
 private:
-	
+	bool IsDamagey = false;
 	bool inited = false;
 	int cont = 0;
 	bool diceEditored = false;
@@ -58,6 +63,9 @@ public:
 	AGMTK2020Projectile();
 	void InitSides();
 
+	UFUNCTION(BlueprintCallable)
+	void HitHappened(AActor* otherActor);
+
 
 	
 	void AdjustForDiceEditor();
@@ -65,7 +73,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void OnShoot(FVector from);
+	void OnShoot(FVector from, bool isDamagey);
 
 	int GetIdOfLowestSide();
 	

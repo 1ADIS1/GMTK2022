@@ -18,8 +18,20 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
 	int DefaultCharSpeed = -1;
-public:	
+	int InvinsibilityFrameDurationLeft = 0;
+	int invinsibilityFrameDurationTotal = 1;
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void InitializeMaterial(int status);
+	
+	
+	UPROPERTY(EditAnywhere)
+	int Hp = 1;
+
+	void TryTakeDamage();
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -27,4 +39,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void ActivateSpeedUp();
 	void ResetSpeed();
+	void ActivateSlowDown();
 };

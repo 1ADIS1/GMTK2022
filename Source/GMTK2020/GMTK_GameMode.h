@@ -19,7 +19,7 @@ class GMTK2020_API AGMTK_GameMode : public AGameMode
 public:
 	GENERATED_BODY()
 
-
+	void SpawnDemonsAround(int demons, FVector location);
 	AGMTK_GameMode();
 
 	virtual void BeginPlay() override;

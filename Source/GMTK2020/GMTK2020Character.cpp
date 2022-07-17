@@ -2,6 +2,7 @@
 
 #include "GMTK2020Character.h"
 
+#include "DemonChar.h"
 #include "GlobalState.h"
 #include "GMTK2020Projectile.h"
 #include "Animation/AnimInstance.h"
@@ -13,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionControllerComponent.h"
 #include "XRMotionControllerBase.h" // for FXRMotionControllerBase::RightHandSourceId
+#include "GameFramework/CharacterMovementComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogFPChar, Warning, All);
 
@@ -87,6 +89,83 @@ AGMTK2020Character::AGMTK2020Character()
 	//bUsingMotionControllers = true;
 }
 
+void AGMTK2020Character::MakeDiceDamagey()
+{
+	if (isDiceDamagey)
+		return;
+	
+	isDiceDamagey = true;
+	
+	FTimerHandle UnusedHandle;
+	GetWorldTimerManager().SetTimer(
+		UnusedHandle,
+		this,
+		&AGMTK2020Character::ResetDiceDamagness,
+		3.0f,
+		false
+	);
+}
+
+void AGMTK2020Character::ResetDiceDamagness()
+{
+	isDiceDamagey = false;
+}
+
+void AGMTK2020Character::FreezePlayer()
+{
+	auto charMov = FindComponentByClass<UCharacterMovementComponent>();
+	if (DefaultCharSpeed == -1)
+	{
+		DefaultCharSpeed = charMov->MaxWalkSpeed;
+	}
+	if (charMov->MaxWalkSpeed != DefaultCharSpeed)
+	{
+		return;
+	}
+	charMov->MaxWalkSpeed = DefaultCharSpeed*0.5;
+
+	
+	FTimerHandle UnusedHandle;
+	GetWorldTimerManager().SetTimer(
+		UnusedHandle,
+		this,
+		&AGMTK2020Character::ResetSpeed,
+		3.0f,
+		false
+	);
+}
+
+
+void AGMTK2020Character::SpeedUpPlayer()
+{
+	auto charMov = FindComponentByClass<UCharacterMovementComponent>();
+	if (DefaultCharSpeed == -1)
+	{
+		DefaultCharSpeed = charMov->MaxWalkSpeed;
+	}
+	if (charMov->MaxWalkSpeed != DefaultCharSpeed)
+	{
+		return;
+	}
+	charMov->MaxWalkSpeed = DefaultCharSpeed*2;
+
+	
+	FTimerHandle UnusedHandle;
+	GetWorldTimerManager().SetTimer(
+		UnusedHandle,
+		this,
+		&AGMTK2020Character::ResetSpeed,
+		3.0f,
+		false
+	);
+}
+
+void AGMTK2020Character::ResetSpeed()
+{
+	auto charMov = FindComponentByClass<UCharacterMovementComponent>();
+	charMov->MaxWalkSpeed = DefaultCharSpeed;
+}
+
 void AGMTK2020Character::BeginPlay()
 {
 	// Call the base class  
@@ -118,6 +197,31 @@ void AGMTK2020Character::BeginPlay()
 	// Setup player collisions
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AGMTK2020Character::OnCompHit);
 }
+
+void AGMTK2020Character::MakeEnraged()
+{
+	if (isEnraged)
+		return;
+	
+	isEnraged = true;
+	
+	FTimerHandle UnusedHandle;
+	GetWorldTimerManager().SetTimer(
+		UnusedHandle,
+		this,
+		&AGMTK2020Character::ResetRage,
+		3.0f,
+		false
+	);
+	ActivateRageEffect();
+}
+
+void AGMTK2020Character::ResetRage()
+{
+	DisableRageEffect();
+	isEnraged = false;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -187,10 +291,19 @@ void AGMTK2020Character::LookUpGuard(float Val)
 void AGMTK2020Character::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor->ActorHasTag("Demon") && InvinsibilityFrameDurationLeft <= 0) {
+	if (OtherActor->ActorHasTag("Demon")) {
+
+
+		if (!isEnraged)		
 		{
-			InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
-			Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
+			if ( InvinsibilityFrameDurationLeft <= 0)
+			{
+				InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
+				Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
+			}
+		}else if (auto demon = Cast<ADemonChar>(OtherActor))
+		{
+			demon->TryTakeDamage();
 		}
 	}
 }
@@ -228,7 +341,7 @@ void AGMTK2020Character::OnFire()
 				// spawn the projectile at the muzzle
 				if (auto proj = World->SpawnActor<AGMTK2020Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams))
 				{
-					proj->OnShoot(GetActorLocation());
+					proj->OnShoot(GetActorLocation(),isDiceDamagey);
 				}
 			}
 		}

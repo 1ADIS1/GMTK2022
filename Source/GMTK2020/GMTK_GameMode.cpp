@@ -10,6 +10,25 @@
 
 #include "GameFramework/Actor.h"
 
+void AGMTK_GameMode::SpawnDemonsAround(int demons, FVector location)
+{
+	auto offset = -500;
+	auto x_min = location.X-offset;
+	auto x_max = location.X+offset;
+	auto y_min = location.Y-offset;
+	auto y_max = location.Y + offset;
+	for (int i = 0; i < demons;++i)
+	{
+		float RandX = FMath::RandRange(x_min, x_max);
+		float RandY = FMath::RandRange(y_min, y_max);
+
+		FVector SpawnPosition = FVector(RandX, RandY, Spawn_Z);
+		FRotator SpawnRotation = FRotator(0.f, 0.f, 0.f);
+
+		GetWorld()->SpawnActor(Object_To_Spawn, &SpawnPosition, &SpawnRotation);
+	}
+}
+
 AGMTK_GameMode::AGMTK_GameMode()
 {
 	// set default pawn class to our Blueprinted character

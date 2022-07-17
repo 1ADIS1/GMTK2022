@@ -50,14 +50,36 @@ class AGMTK2020Character : public ACharacter
 	/** Motion controller (left hand) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UMotionControllerComponent* L_MotionController;
+	int DefaultCharSpeed = -1;
 
 public:
 	AGMTK2020Character();
 
+	void MakeDiceDamagey();
+	
+	void ResetDiceDamagness();
+	void FreezePlayer();
+	void SpeedUpPlayer();
+	void ResetSpeed();
+
 protected:
+	bool isDiceDamagey = false;
+	bool isEnraged = false;
+	
 	virtual void BeginPlay();
 
 public:
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateRageEffect();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void DisableRageEffect();
+
+	
+	void MakeEnraged();
+	void ResetRage();
+
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;

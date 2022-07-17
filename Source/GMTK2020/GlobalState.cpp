@@ -7,6 +7,7 @@
 #include "EngineUtils.h"
 #include "GMTK2020Character.h"
 #include "GMTK2020Projectile.h"
+#include "GMTK_GameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 typedef void (UGlobalState::*FunctionPtrType)(FVector);
@@ -20,21 +21,141 @@ void UGlobalState::DamagePlayer()
 	}
 }
 
+void UGlobalState::MakeExplosion(FVector vec)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("EXPLOSION"));
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
+
+	for (auto actor : allActors)
+	{
+		if ((actor->GetActorLocation() - vec).Size() <= 450)
+		{
+			auto demon = Cast<ADemonChar>(actor);
+			demon->TryTakeDamage();
+		}
+	}
+}
+
+void UGlobalState::SpeedUpDemons(FVector vec)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DEMON FAST"));
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
+
+	for (auto actor : allActors)
+	{
+		if ((actor->GetActorLocation() - vec).Size() <= 450)
+		{
+			if (auto demon = Cast<ADemonChar>(actor))
+			{
+				demon->ActivateSpeedUp();
+			}
+		}
+	}
+}
+
+void UGlobalState::FreezeDemons(FVector vec)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DEMON SLOW"));
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
+
+	for (auto actor : allActors)
+	{
+		if ((actor->GetActorLocation() - vec).Size() <= 450)
+		{
+			auto demon = Cast<ADemonChar>(actor);
+			demon->ActivateSlowDown();
+		}
+	}
+}
+
+void UGlobalState::SpawnTurret(FVector Vector)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("TUwwET"));
+	// TODO: turret spawn
+}
+
+void UGlobalState::MakeDiceDamagey(FVector Vector)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DAMAGEY DICE"));
+	if (auto player = UGameplayStatics::GetPlayerPawn(GetWorld(),0))
+	{
+		if (auto playerChar = Cast<AGMTK2020Character>(player))
+		{
+			playerChar->MakeDiceDamagey();
+		}
+	}
+}
+
+void UGlobalState::SpawnNewDemons(FVector Vector)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DEMON BACKUP!"));
+
+	auto MyMode = Cast< AGMTK_GameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	MyMode->SpawnDemonsAround(3,Vector);
+}
+
+void UGlobalState::SpawnObstacles(FVector Vector)
+{
+	// TODO: spawn obstacle
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OBSTACLE SPAWN"));
+}
+
+void UGlobalState::FreezePlayer(FVector Vector)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PLAYER SLOW"));
+	if (auto player = UGameplayStatics::GetPlayerPawn(GetWorld(),0))
+	{
+		if (auto playerChar = Cast<AGMTK2020Character>(player))
+		{
+			playerChar->FreezePlayer();
+		}
+	}
+}
+
+void UGlobalState::GivePlayerAKnife(FVector Vector)
+{	if (auto player = UGameplayStatics::GetPlayerPawn(GetWorld(),0))
+{
+	if (auto playerChar = Cast<AGMTK2020Character>(player))
+	{
+		playerChar->MakeEnraged();
+	}
+}
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PLAYER RAGE"));
+}
+
+void UGlobalState::SpeedUpPlayer(FVector Vector)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PLAYER FAST"));
+	if (auto player = UGameplayStatics::GetPlayerPawn(GetWorld(),0))
+	{
+		if (auto playerChar = Cast<AGMTK2020Character>(player))
+		{
+			playerChar->SpeedUpPlayer();
+		}
+	}
+}
+
 void UGlobalState::OnWorldChanged(UWorld* OldWorld, UWorld* NewWorld)
 {
 	CurrentLevel++;
 	PlayerHp = 6;
 	Super::OnWorldChanged(OldWorld, NewWorld);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("World init!"));
 	if (Powers == nullptr)
 	{
 		funcs[0] = &UGlobalState::MakeExplosion;
 		funcs[1] = &UGlobalState::SpeedUpDemons;
-		funcs[2] = &UGlobalState::SpeedUpDemons;
-		funcs[3] = &UGlobalState::SpeedUpDemons;
-		funcs[4] = &UGlobalState::MakeExplosion;
-		funcs[5] = &UGlobalState::MakeExplosion;
-		
+		funcs[2] = &UGlobalState::FreezeDemons;
+		funcs[3] = &UGlobalState::SpawnTurret;
+		funcs[4] = &UGlobalState::MakeDiceDamagey;
+		funcs[5] = &UGlobalState::SpawnNewDemons;
+		funcs[6] = &UGlobalState::SpawnObstacles;
+		funcs[7] = &UGlobalState::FreezePlayer;
+		funcs[8] = &UGlobalState::GivePlayerAKnife;
+		funcs[9] = &UGlobalState::SpeedUpPlayer;
+
 		InitializeDefaultPowers();
 	}
 }
@@ -87,7 +208,7 @@ UPaperSprite* UGlobalState::GetFullCardByPowerIndex(int Index) const
 
 UPaperSprite* UGlobalState::GetFullCardByCardIndex(int Index) const
 {
-	return Powers[CardPowerIds[Index]].FullCardSprite;
+	return FullCards[CardPowerIds[Index]];
 }
 
 bool UGlobalState::GetIsDebuffOfPower(int Index) const
@@ -190,41 +311,10 @@ void UGlobalState::InitializeDefaultPowers()
 	}
 }
 
+
 void UGlobalState::PrintPosition(FVector vec)
 {
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("" + vec.ToString()));
-}
-
-void UGlobalState::MakeExplosion(FVector vec)
-{
-	TArray<AActor*> allActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
-
-	for (auto actor : allActors)
-	{
-		if ((actor->GetActorLocation() - vec).Size() <= 450)
-		{
-			actor->Destroy();
-		}
-	}
-}
-
-void UGlobalState::SpeedUpDemons(FVector vec)
-{
-	TArray<AActor*> allActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(),"Demon",allActors);
-
-	for (auto actor : allActors)
-	{
-		if ((actor->GetActorLocation() - vec).Size() <= 450)
-		{
-			if (auto demon = Cast<ADemonChar>(actor))
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("DEMON SPED UP"));
-				demon->ActivateSpeedUp();
-			}
-		}
-	}
 }
 
 
