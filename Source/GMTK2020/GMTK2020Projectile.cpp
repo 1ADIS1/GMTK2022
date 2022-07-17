@@ -159,6 +159,8 @@ void AGMTK2020Projectile::Tick(float DeltaTime)
 	{
 		int indexToExecute = GetIdOfLowestSide();
 		Cast<UGlobalState>(GetGameInstance())->ExecuteFunctionByPowerIndex(indexToExecute, GetActorLocation());
+
+		PlayDiceSound();
 		Destroy();
 	}
 }

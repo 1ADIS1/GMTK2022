@@ -290,6 +290,7 @@ void AGMTK2020Character::TryTakeDamage()
 {
 	if ( InvinsibilityFrameDurationLeft <= 0)
 	{
+		PlayDamageSound();
 		InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
 		Cast<UGlobalState>(GetGameInstance())->DamagePlayer();
 	}
