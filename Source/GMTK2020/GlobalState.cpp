@@ -88,7 +88,7 @@ UPaperSprite* UGlobalState::GetFullCardByCardIndex(int Index) const
 	return Powers[CardPowerIds[Index]].FullCardSprite;
 }
 
-int UGlobalState::GetIsDebuffOfPower(int Index) const
+bool UGlobalState::GetIsDebuffOfPower(int Index) const
 {
 	return Powers[Index].IsDebuff;
 }

@@ -109,7 +109,7 @@ public:
 	int GetCostOfPower(int Index) const;
 	
 	UFUNCTION(BlueprintCallable)
-	int GetIsDebuffOfPower(int Index) const;
+	bool GetIsDebuffOfPower(int Index) const;
 	
 
 	
