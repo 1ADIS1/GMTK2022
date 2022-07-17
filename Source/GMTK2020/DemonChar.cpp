@@ -42,7 +42,9 @@ void ADemonChar::TryTakeDamage()
 // Called every frame
 void ADemonChar::Tick(float DeltaTime)
 {
+	auto charMov  =FString::SanitizeFloat(FindComponentByClass<UCharacterMovementComponent>()->MaxWalkSpeed);
 	InvinsibilityFrameDurationLeft -= DeltaTime;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, charMov);
 	Super::Tick(DeltaTime);
 
 }
