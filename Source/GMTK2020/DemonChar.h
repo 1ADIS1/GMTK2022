@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Misc/OutputDeviceNull.h"
+
 #include "DemonChar.generated.h"
 
 UCLASS()
@@ -44,4 +46,14 @@ public:
 	void ActivateSpeedUp();
 	void ResetSpeed();
 	void ActivateSlowDown();
+
+	UPROPERTY(EditAnywhere, Category = "BlueprintClass")
+		AActor* blueprintActor;
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void PlayDamageSound();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+		void PlayDeathSound();
+
 };

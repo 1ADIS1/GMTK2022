@@ -27,8 +27,14 @@ void ADemonChar::TryTakeDamage()
 	{
 		InvinsibilityFrameDurationLeft = invinsibilityFrameDurationTotal;
 		Hp--;
+		PlayDamageSound();
+
 		if (Hp <= 0)
+		{
+			PlayDeathSound();
 			Destroy();
+
+		}
 		
 	}
 }
