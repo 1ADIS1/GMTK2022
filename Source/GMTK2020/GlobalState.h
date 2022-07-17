@@ -18,20 +18,26 @@ class GMTK2020_API UGlobalState : public UGameInstance
 	GENERATED_BODY()
 
 private:
+	UPROPERTY()
 	int PlayerHp = 6;
 	
+	UPROPERTY()
 	int CardsClicked = 0;
 	
 	bool CardClicked[3]{false,false,false};
 
+	UPROPERTY()
 	int PendingPowerId = 0;
 
+	UPROPERTY()
 	int CurrentLevel = -1;
 	
 	int CardPowerIds[3]{0,0,0};
 	
+	UPROPERTY()
 	bool WaitingForCardClick = false;
 
+	UPROPERTY()
 	AGMTK2020Projectile* RotatingCube = nullptr;
 	
 public:
@@ -68,6 +74,9 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
 	TSubclassOf<class AGMTK2020Projectile> CubeClass;
+	
+	UPROPERTY(EditDefaultsOnly, Category=Effects)
+	TSubclassOf<class AActor> ExplosionType;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -112,10 +121,12 @@ public:
 	bool GetIsDebuffOfPower(int Index) const;
 	
 
-	
-	FDicePower* Powers = nullptr;
+	FDicePower* Powers = nullptr; 
 	void InitializeDefaultPowers();
 	void PrintPosition(FVector vec);
+	
+	void MakeExplosion(FVector vec);
+	void SpeedUpDemons(FVector vec);
 
 	void ExecuteFunctionById(int id,FVector vec);
 	void ExecuteFunctionByPowerIndex(int powerIndex,FVector vec);
@@ -128,7 +139,7 @@ public:
 	
 typedef void (UGlobalState::*FunctionPtrType)(FVector);
 
-class FDicePower
+class FDicePower 
 {
 public:
 	UGlobalState* globalState;

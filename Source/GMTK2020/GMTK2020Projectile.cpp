@@ -104,12 +104,12 @@ int AGMTK2020Projectile::GetIdOfLowestSide()
 		std::pair<UCubeSide*,int>(FifthSide,4),
 		std::pair<UCubeSide*,int>(SixthSide,5),
 	};
-	int height = INT_MAX;
+	int height = INT_MIN;
 	int id = -1;
 	for (auto Pair : pairs)
 	{
 		int curHeight = Pair.first->GetComponentLocation().Z;
-		if (curHeight < height)
+		if (curHeight > height)
 		{
 			height = curHeight;
 			id = Pair.second;
@@ -133,7 +133,7 @@ void AGMTK2020Projectile::Tick(float DeltaTime)
 		SpawnVector.X = FMath::FRandRange(-10000, 10000);
 		SpawnVector.Y = FMath::FRandRange(-10000, 10000);
 		SpawnVector.Z = FMath::FRandRange(-10000, 10000);
-		if (staticMesh->GetPhysicsAngularVelocityInRadians().Size() <= 100)
+		if (staticMesh->GetPhysicsAngularVelocityInRadians().Size() <= 25)
 			staticMesh->AddAngularImpulseInRadians(SpawnVector*DeltaTime*1);
 		SetActorLocation(rememberedPosition);
 		return;
