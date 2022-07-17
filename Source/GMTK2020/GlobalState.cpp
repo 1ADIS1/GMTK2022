@@ -316,6 +316,7 @@ void UGlobalState::CreateEditableCube()
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SPAWNING CUBE"));
 		RotatingCube = GetWorld()->SpawnActor<AGMTK2020Projectile>(CubeClass,spawnLocation,SpawnRotation,ActorSpawnParams);
 		RotatingCube->AdjustForDiceEditor();
+		GetWorld()->SpawnActor<AActor>(BackgroundClass,spawnLocation + pDirection*100 ,SpawnRotation,ActorSpawnParams);
 	}else
 	{
 		

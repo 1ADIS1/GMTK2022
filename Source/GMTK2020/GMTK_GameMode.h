@@ -63,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UI HUD")
 		TSubclassOf<UUserWidget> Health_Widget_Class;
 	UUserWidget* Health_Widget;
+	
+	UPROPERTY(EditAnywhere, Category = "UI HUD")
+	TSubclassOf<UUserWidget> Blood_Widget_Class;
+	UUserWidget* Blood_Widget;
 
 	// Dice editor
 	UPROPERTY(EditAnywhere, Category = "UI HUD")

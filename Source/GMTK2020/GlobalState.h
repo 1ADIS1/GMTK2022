@@ -47,8 +47,11 @@ public:
 	void DamagePlayer();
 
 	UPROPERTY(EditAnywhere,Category=Blood)
-	int Blood = 100;
-
+	int Blood = 99999999;
+	
+	UPROPERTY(EditDefaultsOnly, Category=Effects)
+	TSubclassOf<class AActor> BackgroundClass;
+	
 	UPROPERTY(EditDefaultsOnly, Category=ProjectilePrime)
 	TArray<UPaperSprite*> Sprites;
 	

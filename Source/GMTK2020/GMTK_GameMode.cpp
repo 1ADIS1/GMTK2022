@@ -62,6 +62,10 @@ void AGMTK_GameMode::BeginPlay()
 		Health_Widget = CreateWidget(GetWorld(), Health_Widget_Class);
 		Health_Widget->AddToViewport();
 	}
+	if (Blood_Widget_Class != nullptr) {
+		Blood_Widget = CreateWidget(GetWorld(), Blood_Widget_Class);
+		Blood_Widget->AddToViewport();
+	}
 	
 	Level_Current_Time = Level_Max_Time;
 }
